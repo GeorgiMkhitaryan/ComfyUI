@@ -3,7 +3,10 @@ from abc import ABC, abstractmethod
 from fractions import Fraction
 from typing import Optional, Union, IO
 import io
-import av
+try:
+    import av
+except Exception:
+    av = None
 from .._util import VideoContainer, VideoCodec, VideoComponents
 
 class VideoInput(ABC):

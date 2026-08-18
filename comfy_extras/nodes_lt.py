@@ -8,7 +8,10 @@ import comfy.samplers
 import comfy.utils
 import math
 import numpy as np
-import av
+try:
+    import av
+except Exception:
+    av = None
 from io import BytesIO
 from typing_extensions import override
 from comfy.ldm.lightricks.symmetric_patchifier import SymmetricPatchifier, latent_to_pixel_coords

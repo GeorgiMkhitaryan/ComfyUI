@@ -1,4 +1,7 @@
-import av
+try:
+    import av
+except Exception:
+    av = None
 import torchaudio
 import torch
 import comfy.model_management

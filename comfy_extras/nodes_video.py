@@ -1,5 +1,8 @@
 import os
-import av
+try:
+    import av
+except Exception:
+    av = None
 import torch
 import folder_paths
 import json

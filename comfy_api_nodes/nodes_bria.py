@@ -1,4 +1,7 @@
-import av
+try:
+    import av
+except Exception:
+    av = None
 import torch
 from av.codec import CodecContext
 from typing_extensions import override

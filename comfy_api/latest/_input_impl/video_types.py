@@ -1,13 +1,19 @@
-from av.container import InputContainer
-from av.subtitles.stream import SubtitleStream
-from av.video.reformatter import ColorRange
 from fractions import Fraction
 from typing import Optional
 from .._input import AudioInput, VideoInput
-import av
 import io
 import itertools
 import json
+try:
+    import av
+    from av.container import InputContainer
+    from av.subtitles.stream import SubtitleStream
+    from av.video.reformatter import ColorRange
+except Exception:
+    av = None
+    InputContainer = object
+    SubtitleStream = object
+    ColorRange = None
 import numpy as np
 import math
 import os
@@ -447,6 +453,12 @@ class VideoFromFile(VideoInput):
         return VideoComponents(images=images, alpha=alphas, audio=audio, frame_rate=frame_rate, metadata=metadata)
 
     def get_components(self) -> VideoComponents:
+        if av is None:
+            raise RuntimeError(
+                "PyAV (av) is not available — its DLL was blocked by Windows Smart App Control.\n"
+                "Fix: open Windows Security → App & browser control → Smart App Control settings → turn OFF.\n"
+                "Then restart ComfyUI."
+            )
         if isinstance(self.__file, io.BytesIO):
             self.__file.seek(0)  # Reset the BytesIO object to the beginning
         with av.open(self.__file, mode='r') as container:

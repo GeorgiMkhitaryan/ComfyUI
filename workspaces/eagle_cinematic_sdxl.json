@@ -1,0 +1,86 @@
+{
+  "100": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "juggernautXL_ragnarokBy.safetensors"
+    }
+  },
+  "101": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "100",
+        1
+      ],
+      "text": "A stunning cinematic shot of a majestic golden eagle soaring above snow-capped mountain peaks at sunset, volumetric golden sunlight, 8k resolution, photorealistic, masterpiece"
+    }
+  },
+  "102": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "100",
+        1
+      ],
+      "text": "blurry, low quality, distorted, bad hands, cartoon, drawing, text, watermark"
+    }
+  },
+  "103": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "batch_size": 1,
+      "width": 1024,
+      "height": 576
+    }
+  },
+  "104": {
+    "class_type": "KSampler",
+    "inputs": {
+      "cfg": 6,
+      "denoise": 1,
+      "latent_image": [
+        "103",
+        0
+      ],
+      "model": [
+        "100",
+        0
+      ],
+      "negative": [
+        "102",
+        0
+      ],
+      "positive": [
+        "101",
+        0
+      ],
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "seed": 424242,
+      "steps": 20
+    }
+  },
+  "105": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "104",
+        0
+      ],
+      "vae": [
+        "100",
+        2
+      ]
+    }
+  },
+  "106": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "filename_prefix": "Arqonium_Engine",
+      "images": [
+        "105",
+        0
+      ]
+    }
+  }
+}

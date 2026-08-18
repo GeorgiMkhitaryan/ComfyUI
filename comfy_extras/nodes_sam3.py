@@ -12,7 +12,10 @@ import comfy.model_management
 import comfy.utils
 import folder_paths
 from comfy_api.latest import ComfyExtension, io, ui
-import av
+try:
+    import av
+except Exception:
+    av = None
 from fractions import Fraction
 
 
@@ -151,7 +154,10 @@ class SAM3_Detect(io.ComfyNode):
 
         comfy.model_management.load_model_gpu(model)
         device = comfy.model_management.get_torch_device()
-        dtype = model.model.get_dtype()
+        # get_dtype() возвращает dtype ХРАНЕНИЯ весов. Для fp8-чекпоинта это
+        # float8_e4m3fn, и вход, приведённый к нему, роняет cuDNN в conv2d.
+        # get_dtype_inference() отдаёт manual_cast_dtype (fp16) - dtype ВЫЧИСЛЕНИЙ.
+        dtype = model.model.get_dtype_inference()
         sam3_model = model.model.diffusion_model
 
         # Build point inputs for tracker SAM decoder path
@@ -287,7 +293,10 @@ class SAM3_VideoTrack(io.ComfyNode):
 
         comfy.model_management.load_model_gpu(model)
         device = comfy.model_management.get_torch_device()
-        dtype = model.model.get_dtype()
+        # get_dtype() возвращает dtype ХРАНЕНИЯ весов. Для fp8-чекпоинта это
+        # float8_e4m3fn, и вход, приведённый к нему, роняет cuDNN в conv2d.
+        # get_dtype_inference() отдаёт manual_cast_dtype (fp16) - dtype ВЫЧИСЛЕНИЙ.
+        dtype = model.model.get_dtype_inference()
         sam3_model = model.model.diffusion_model
 
         frames_in = images[..., :3].movedim(-1, 1)

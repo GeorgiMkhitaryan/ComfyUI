@@ -2,7 +2,10 @@ import logging
 import os
 import json
 
-import av
+try:
+    import av
+except Exception:
+    av = None
 import numpy as np
 import torch
 from PIL import Image

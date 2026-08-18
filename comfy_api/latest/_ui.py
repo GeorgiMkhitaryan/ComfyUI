@@ -6,7 +6,12 @@ import random
 import uuid
 from io import BytesIO
 
-import av
+try:
+    import av
+    AV_AVAILABLE = True
+except Exception:
+    av = None
+    AV_AVAILABLE = False
 import numpy as np
 import torch
 try:

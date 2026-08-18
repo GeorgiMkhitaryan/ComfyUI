@@ -1,7 +1,10 @@
 import nodes
 import folder_paths
 
-import av
+try:
+    import av
+except Exception:
+    av = None
 import json
 
 import os

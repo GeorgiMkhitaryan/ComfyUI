@@ -5,7 +5,10 @@ import mimetypes
 import uuid
 from io import BytesIO
 
-import av
+try:
+    import av
+except Exception:
+    av = None
 import numpy as np
 import torch
 from PIL import Image
