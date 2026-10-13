@@ -6,7 +6,11 @@ import weakref
 import comfy_kitchen as ck
 import torch
 
-import comfy_aimdo.malloc_graph
+import comfy_aimdo
+try:
+    import comfy_aimdo.malloc_graph
+except ImportError:
+    comfy_aimdo.malloc_graph = None
 import comfy_aimdo.model_vbar
 from comfy.cli_args import args
 import comfy.memory_management
@@ -27,7 +31,7 @@ def _malloc_graph_break():
     logging.debug("Comfy model compiler graph break")
 
 def malloc_graph_enabled(device):
-    return not args.disable_comfy_compiler and comfy.memory_management.aimdo_enabled and comfy.model_management.is_device_cuda(device)
+    return getattr(comfy_aimdo, "malloc_graph", None) is not None and not args.disable_comfy_compiler and comfy.memory_management.aimdo_enabled and comfy.model_management.is_device_cuda(device)
 
 class _PauseMallocGraph:
     def __init__(self, sync=False):

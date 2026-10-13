@@ -505,7 +505,7 @@ class VAE:
         self.output_channels = 3
         self.pad_channel_value = None
         self.process_input = lambda image: image * 2.0 - 1.0
-        self.process_output = lambda image: image.add_(1.0).div_(2.0).clamp_(0.0, 1.0)
+        self.process_output = lambda image: ((image + 1.0) / 2.0).clamp(0.0, 1.0)
         self.working_dtypes = [torch.bfloat16, torch.float32]
         self.disable_offload = False
         self.not_video = False
@@ -1261,7 +1261,10 @@ class VAE:
                                 pixel_samples = torch.empty((samples_in.shape[0],) + tuple(out.shape[1:]), device=self.output_device, dtype=self.vae_output_dtype())
                         pixel_samples[x:x+batch_number].copy_(out)
                         del out
-                    self.process_output(pixel_samples[x:x+batch_number])
+                    # process_output is out-of-place here (local patch), so its
+                    # result must be written back; discarding it left every
+                    # decode in [-1, 1], i.e. out = 2x - 1 and half-black frames.
+                    pixel_samples[x:x+batch_number] = self.process_output(pixel_samples[x:x+batch_number])
             except Exception as e:
                 model_management.raise_non_oom(e)
                 logging.warning("Warning: Ran out of memory when regular VAE decoding, retrying with tiled VAE decoding.")

@@ -36,13 +36,13 @@ def _unpack(track_data):
 
 def _first_appearance_cx_area(masks_bool):
     """Per object: first frame it appears in, plus centroid-x and area in that frame."""
-    m = masks_bool.float()
-    T, H, W = m.shape[0], m.shape[-2], m.shape[-1]
-    grid_x = torch.arange(W, device=m.device, dtype=m.dtype).view(1, 1, 1, W)
-    area_t = m.sum(dim=(-1, -2))
-    cx_t = (m * grid_x).sum(dim=(-1, -2)) / area_t.clamp(min=1)
+    T, H, W = masks_bool.shape[0], masks_bool.shape[-2], masks_bool.shape[-1]
+    grid_x = torch.arange(W, device=masks_bool.device, dtype=torch.float32)
+    col_sum = masks_bool.sum(dim=-2, dtype=torch.float32)
+    area_t = col_sum.sum(dim=-1)
+    cx_t = (col_sum * grid_x).sum(dim=-1) / area_t.clamp(min=1)
     present = area_t > 0
-    frame_idx = torch.arange(T, device=m.device).unsqueeze(1)
+    frame_idx = torch.arange(T, device=masks_bool.device).unsqueeze(1)
     first_t = torch.where(present, frame_idx, T).amin(dim=0)
     sel = first_t.clamp(max=T - 1).unsqueeze(0)
     cx = cx_t.gather(0, sel).squeeze(0)

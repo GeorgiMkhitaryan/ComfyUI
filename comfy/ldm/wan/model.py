@@ -684,6 +684,8 @@ class WanModel(torch.nn.Module):
         ).execute(x, timestep, context, clip_fea, time_dim_concat, transformer_options, **kwargs)
 
     def _forward(self, x, timestep, context, clip_fea=None, time_dim_concat=None, transformer_options={}, **kwargs):
+        with open(r"D:\Project\ComfyUI\output\model_nan_trace.txt", "w") as tr:
+            tr.write(f"ENTRY: x nan: {torch.isnan(x).any().item()}, timestep: {timestep}, context nan: {torch.isnan(context).any().item()}\n")
         bs, c, t, h, w = x.shape
         x = comfy.ldm.common_dit.pad_to_patch_size(x, self.patch_size)
 

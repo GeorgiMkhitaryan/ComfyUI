@@ -66,13 +66,16 @@ def read_tensor_file_slice_into(tensor, destination, stream=None, destination2=N
     if hostbuf is not None:
         stream_ptr = getattr(stream, "cuda_stream", 0) if stream is not None else 0
         device_ptr = destination2.data_ptr() if destination2 is not None else 0
-        with info.lock:
-            hostbuf.read_file_slice(file_obj, info.offset, info.size,
-                                    offset=destination.data_ptr() - hostbuf.get_raw_address(),
-                                    stream=stream_ptr,
-                                    device_ptr=device_ptr,
-                                    device=None if destination2 is None else destination2.device.index)
-        return True
+        try:
+            with info.lock:
+                hostbuf.read_file_slice(file_obj, info.offset, info.size,
+                                        offset=destination.data_ptr() - hostbuf.get_raw_address(),
+                                        stream=stream_ptr,
+                                        device_ptr=device_ptr,
+                                        device=None if destination2 is None else destination2.device.index)
+            return True
+        except Exception:
+            pass
 
     if not hasattr(file_obj, "seek") or not hasattr(file_obj, "readinto"):
         return False
