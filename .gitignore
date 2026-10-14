@@ -24,5 +24,6 @@ web_custom_versions/
 filtered-openapi.yaml
 uv.lock
 .comfy_environment
+/previews/
 workspaces/
 built_api_prompt.json
